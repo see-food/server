@@ -4,7 +4,7 @@ const router   = express.Router();
 const User     = require('../../models/user.model');
 const bcrypt   = require('bcrypt');
 const sendEmail = require('../../mailing/send');
-
+const urlencode = require('urlencode');
 router.post("/login", (req, res, next) => {
   passport.authenticate('local', (err, user, info) =>  {
     if (err) { return next(err); }
@@ -60,7 +60,7 @@ router.post("/signup", (req, res, next) => {
               message: 'something went wrong'
             });
           }
-          sendEmail(newUser.username, newUser.email, encodeURIComponent(newUser.confirmationCode))
+          sendEmail(newUser.username, newUser.email, urlencode(newUser.confirmationCode))
           return res.status(200).json(req.user);
         });
       }
@@ -79,6 +79,21 @@ router.get("/loggedin", function(req, res) {
   }
 
   return res.status(403).json({ message: 'Unauthorized' });
+});
+
+router.get("/confirm/:hash", (req, res) => {
+  const hashResponse = urlencode.decode(req.params.hash);
+  User.findOne({confirmationCode: hashResponse}, "confirmationCode")
+    .then(user=>{
+      if(user==null){
+        return res.status(500).json({message: "Something went wrong"})
+      }
+      User.findByIdAndUpdate(user.id, {status: "Active"})
+      .then(user=>{
+        console.log(`User ${user.name} has been activated`);
+        return res.status(200).json(req.user);
+      })
+  })
 });
 
 module.exports = router;

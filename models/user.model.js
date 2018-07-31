@@ -20,6 +20,11 @@ const UserSchema = new Schema({
   confirmationCode: { 
     type: String,
     unique: true
+  },
+  status:{
+    type: String,
+    enum:["Pending Confirmation", "Active"],
+    default: "Pending Confirmation"
   }
 }, {
   timestamps: {
