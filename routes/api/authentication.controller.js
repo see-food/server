@@ -3,6 +3,7 @@ const passport = require('passport');
 const router   = express.Router();
 const User     = require('../../models/user.model');
 const bcrypt   = require('bcrypt');
+const sendEmail = require('../../mailing/send');
 
 router.post("/login", (req, res, next) => {
   passport.authenticate('local', (err, user, info) =>  {
@@ -41,11 +42,12 @@ router.post("/signup", (req, res, next) => {
 
     const salt     = bcrypt.genSaltSync(10);
     const hashPass = bcrypt.hashSync(password, salt);
-
+    const hashConfirmation = bcrypt.hashSync(username, salt)
     const newUser = User({
       username,
       email,
-      password: hashPass
+      password: hashPass,
+      confirmationCode: hashConfirmation
     });
 
     newUser.save((err) => {
@@ -58,6 +60,7 @@ router.post("/signup", (req, res, next) => {
               message: 'something went wrong'
             });
           }
+          sendEmail(newUser.username, newUser.email, encodeURIComponent(newUser.confirmationCode))
           return res.status(200).json(req.user);
         });
       }
