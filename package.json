@@ -7,6 +7,7 @@
     "dev": "DEBUG=server:* nodemon ./bin/www"
   },
   "dependencies": {
+    "axios": "^0.18.0",
     "bcrypt": "^1.0.3",
     "body-parser": "~1.18.2",
     "clarifai": "^2.8.0",
@@ -29,8 +30,7 @@
     "nodemailer": "^4.6.7",
     "passport": "^0.4.0",
     "passport-local": "^1.0.0",
-    "serve-favicon": "~2.4.5",
-    "urlencode": "^1.1.0"
+    "serve-favicon": "~2.4.5"
   },
   "devDependencies": {
     "nodemon": "^1.12.1"

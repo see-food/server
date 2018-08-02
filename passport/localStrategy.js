@@ -20,6 +20,11 @@ passport.use(new LocalStrategy((username, password, next) => {
       return;
     }
 
+    if (foundUser.status == 'Pending Confirmation') {
+      next(null, false, { message: 'User not confirmed' });
+      return;
+    }
+
     next(null, foundUser);
   });
 }));
