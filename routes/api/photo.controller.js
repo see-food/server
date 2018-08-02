@@ -9,8 +9,9 @@ const clarifaiApp = new Clarifai.App({
  apiKey: process.env.CLARIFAI_KEY
 });
 
-router.post('/', upload.single('pic'), (req, res, next) => {
-  
+router.post('/', upload.single('photo'), (req, res, next) => {
+  console.log('asdasd')
+  console.log(req.file);
   const newPhoto = new Photo({
     filename: req.file.originalname,
     path: req.file.url

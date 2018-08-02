@@ -16,7 +16,7 @@ cloudinary.config({
 
 var storage = cloudinaryStorage({
   cloudinary: cloudinary,
-  folder: "SeeFood",
+  folder: 'seefood',
   allowedFormats: ["jpg", "png"],
   filename: function(req, file, cb) {
     photo = new Date().getTime().toString();
