@@ -3,17 +3,17 @@ const router = express.Router();
 const Recipe = require('../../models/recipe.model');
 const User = require('../../models/user.model');
 const Photo = require('../../models/photo.model')
-const upload = require('../../cloudinary/cloudinary');
+const uploadCloud = require('../../config/cloudinary');
 const Clarifai = require('clarifai');
 const clarifaiApp = new Clarifai.App({
  apiKey: process.env.CLARIFAI_KEY
 });
 
-router.post('/', upload.single('photo'), (req, res, next) => {
-  console.log('asdasd')
+router.post('/', uploadCloud.single('photo'), (req, res, next) => {
+  console.log('entra')
   console.log(req.file);
   const newPhoto = new Photo({
-    filename: req.file.originalname,
+    filename: req.file.filename,
     path: req.file.url
   });
 
