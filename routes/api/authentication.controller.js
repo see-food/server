@@ -4,7 +4,8 @@ const router   = express.Router();
 const User     = require('../../models/user.model');
 const bcrypt   = require('bcrypt');
 const sendEmail = require('../../mailing/send');
-const urlencode = require('urlencode');
+
+
 router.post("/login", (req, res, next) => {
   passport.authenticate('local', (err, user, info) =>  {
     if (err) { return next(err); }
@@ -54,15 +55,20 @@ router.post("/signup", (req, res, next) => {
       if (err) {
         res.status(400).json({ message: "Something went wrong" });
       } else {
-        req.login(newUser, function(err) {
-          if (err) {
-            return res.status(500).json({
-              message: 'something went wrong'
-            });
-          }
-          sendEmail(newUser.username, newUser.email, urlencode(newUser.confirmationCode))
+        // req.login(newUser, function(err) {
+        //   if (err) {
+        //     return res.status(500).json({
+        //       message: 'something went wrong'
+        //     });
+        //   }
+
+          var buffer = new Buffer(newUser.confirmationCode);
+          var encoded = buffer.toString('base64');
+
+
+          sendEmail(newUser.username, newUser.email, encoded)
           return res.status(200).json(req.user);
-        });
+        // })
       }
     });
   });
@@ -82,16 +88,35 @@ router.get("/loggedin", function(req, res) {
 });
 
 router.get("/confirm/:hash", (req, res) => {
-  const hashResponse = urlencode.decode(req.params.hash);
+
+  var buffer = new Buffer(req.params.hash, 'base64')
+  var hashResponse = buffer.toString();
+
   User.findOne({confirmationCode: hashResponse}, "confirmationCode")
     .then(user=>{
-      if(user==null){
+      if(user == null) {
         return res.status(500).json({message: "Something went wrong"})
       }
       User.findByIdAndUpdate(user.id, {status: "Active"})
       .then(user=>{
-        console.log(`User ${user.name} has been activated`);
-        return res.status(200).json(req.user);
+        console.log(user)
+        console.log(`User ${user.username} has been activated`);
+
+        req.login(user, function(err) {
+          if (err) {
+            return res.status(500).json({
+              message: 'something went wrong'
+            });
+          }
+
+          console.log(req.user)
+          return res.status(200).json(req.user);
+        })
+      })
+      .catch(err => {
+        return res.status(500).json({
+          message: 'something went wrong'
+        });
       })
   })
 });
