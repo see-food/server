@@ -19,8 +19,8 @@ const PhotoSchema = Schema({
     ref: 'User'
   },
   clarifaiInfo:[{
-    tag: String,
-    weight: { 
+    name: String,
+    value: { 
       type: Number,
       minValue: 0.98
     }
