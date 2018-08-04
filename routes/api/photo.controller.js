@@ -4,6 +4,7 @@ const Recipe = require('../../models/recipe.model');
 const User = require('../../models/user.model');
 const Photo = require('../../models/photo.model')
 const uploadCloud = require('../../config/cloudinary');
+const allrecipes = require('../../utils/allrecipes.utils')
 const Clarifai = require('clarifai');
 const clarifaiApp = new Clarifai.App({
  apiKey: process.env.CLARIFAI_KEY
@@ -28,15 +29,32 @@ router.post('/', uploadCloud.single('file'), (req, res, next) => {
       });
       console.log(newPhoto);
       newPhoto.save()
-        .then(photo => res.status(200).json({
-          message: 'photo uploaded correctly',
-          photo
-        }))
+        .then(photo => {
+
+          // const search = req.params.s
+          // const url = `${process.env.ALLRECIPES_ENDPOINT}${search}`
+          //
+          // allrecipes.scrapeSearch(url)
+          // .then( urls => {
+          //   allrecipes.scrapeRecipes(urls)
+          //   .then(recipes => {
+          //     res.send(recipes)
+          //   })
+          // })
+          // .catch( err => console.log(err) )
+
+
+          res.status(200).json({
+            message: 'Photo uploaded correctly',
+            photo
+          })
+        })
         .catch(err => res.status(500).json(err))
     })
     .catch(err => {
       console.log(err);
-      return res.status(500).json(err)})
+      return res.status(500).json(err)
+    })
 })
 
 module.exports = router;

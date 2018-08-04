@@ -6,29 +6,26 @@ const recipeSchema = new Schema({
     type: String,
     required: [true, 'Name is required']
   },
-  category: {
-    type: String,
-    required: [true, 'Category is required']
+  time: {
+    type: String
   },
-  cuisine: {
-    type: String,
-    required: [true, 'Cuisine is required']
+  servings: {
+    type: Number
+  },
+  calories: {
+    type: Number
   },
   instructions: {
-    type: String,
+    type: [String],
     required: [true, 'Instructions are required']
   },
-  image: String,
-  video: String,
-  ingredients: [
-    {
-      name: {
-        type: String,
-        required: true
-      },
-      quantity: String
-    }
-  ]
+  images: {
+    type: [String]
+  },
+  ingredients: {
+    type: [String],
+    required: true
+  }
 }, {
   timestamps: {
     createdAt: 'created_at',

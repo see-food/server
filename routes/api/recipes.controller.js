@@ -9,7 +9,7 @@ const User = require('../../models/user.model');
 
 //Post new recipe if doesn't exists in the db
 router.post('/', (req, res, next) => {
-  let { name, category, cuisine, instructions, ingredients } = req.body
+  let { name, time, servings, calories, instructions, images, ingredients } = req.body
 
   Recipe.findOne({name}, "name", (err, recipe) => {
     if (recipe !== null) {
@@ -20,9 +20,11 @@ router.post('/', (req, res, next) => {
 
     const newRecipe = new Recipe({
       name,
-      category,
-      cuisine,
+      time,
+      servings,
+      calories,
       instructions,
+      images,
       ingredients
     });
 
