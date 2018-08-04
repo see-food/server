@@ -8,11 +8,17 @@ const PhotoSchema = Schema({
   },
   filename:{
     type: String,
-    require: true
+    required: true
   },
   recipe: [{
-    type: Schema.Types.ObjectId,
-    ref: 'Recipe'
+    recipeId: {
+      type: Schema.Types.ObjectId,
+      ref: 'Recipe'
+    },
+    starred: {
+      type: Boolean,
+      default: false
+    }
   }],
   user: {
     type: Schema.Types.ObjectId,
@@ -20,13 +26,16 @@ const PhotoSchema = Schema({
   },
   clarifaiInfo:[{
     name: String,
-    value: { 
+    value: {
       type: Number,
       minValue: 0.98
     }
   }]
 }, {
-  timestamps:{ createdAt: 'createdAT', updatedAt:'updatedAt'}
+  timestamps: {
+    createdAt: 'created_at',
+    updatedAt: 'updated_at'
+  }
 });
 
 const Photo = mongoose.model('Photo', PhotoSchema);
