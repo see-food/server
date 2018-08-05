@@ -72,13 +72,7 @@ const scrapeRecipes = (urls) => {
 }
 
 
-const saveRecipes = (recipes) => {
-
-}
-
-
 module.exports = {
   scrapeSearch,
-  scrapeRecipes,
-  saveRecipes
+  scrapeRecipes
 }

@@ -1,5 +1,6 @@
 const Photo = require('../models/photo.model')
 
+//Function that extracts the search terms given a photo
 const extractTerms = (photo) => {
   let terms = []
 
@@ -10,12 +11,12 @@ const extractTerms = (photo) => {
   return terms
 }
 
-
+//Function that adds recipes ids to a photo
 const addRecipesToPhoto = (photoId, recipes) => {
   let update = {
     recipes: []
   }
-  
+
   recipes.forEach(e => {
     update.recipes.push(e._id)
   })
