@@ -10,15 +10,9 @@ const PhotoSchema = Schema({
     type: String,
     required: true
   },
-  recipe: [{
-    recipeId: {
-      type: Schema.Types.ObjectId,
-      ref: 'Recipe'
-    },
-    starred: {
-      type: Boolean,
-      default: false
-    }
+  recipes: [{
+    type: Schema.Types.ObjectId,
+    ref: 'Recipe'
   }],
   user: {
     type: Schema.Types.ObjectId,

@@ -4,7 +4,9 @@ const Recipe = require('../../models/recipe.model');
 const User = require('../../models/user.model');
 const Photo = require('../../models/photo.model')
 const uploadCloud = require('../../config/cloudinary');
-const allrecipes = require('../../utils/allrecipes.utils')
+const allrecipesUtils = require('../../utils/allrecipes.utils')
+const photoUtils = require('../../utils/photo.utils')
+const recipesUtils = require('../../utils/recipes.utils')
 const Clarifai = require('clarifai');
 const clarifaiApp = new Clarifai.App({
  apiKey: process.env.CLARIFAI_KEY
@@ -30,26 +32,41 @@ router.post('/', uploadCloud.single('file'), (req, res, next) => {
       console.log(newPhoto);
       newPhoto.save()
         .then(photo => {
+          //Make search term joinign clarifai info
+          const searchTerm = photoUtils.extractTerms(photo).join(',')
 
-          // const search = req.params.s
-          // const url = `${process.env.ALLRECIPES_ENDPOINT}${search}`
-          //
-          // allrecipes.scrapeSearch(url)
-          // .then( urls => {
-          //   allrecipes.scrapeRecipes(urls)
-          //   .then(recipes => {
-          //     res.send(recipes)
-          //   })
-          // })
-          // .catch( err => console.log(err) )
+          if (!searchTerm) res.status(404).json({
+            message: 'No items found on this photo'
+          })
 
+          const url = `${process.env.ALLRECIPES_ENDPOINT}${searchTerm}`
 
+          //Scrape search page
+          allrecipesUtils.scrapeSearch(url)
+          .then( urls => {
+            //Scrape individual recipes finded
+            allrecipesUtils.scrapeRecipes(urls)
+            .then( recipes => {
+              //Save recipes in database
+              recipesUtils.saveRecipes(recipes)
+              .then(recipes => {
+                //Update photo with recipes ids
+                photoUtils.addRecipesToPhoto(photo._id, recipes)
+              })
+            })
+          })
+          .catch( err => console.log(err) )
+
+          //Inmediatelly send 200 after uploading photo
           res.status(200).json({
             message: 'Photo uploaded correctly',
             photo
           })
         })
-        .catch(err => res.status(500).json(err))
+        .catch(err => {
+          console.log(err)
+          res.status(500).json(err)
+        })
     })
     .catch(err => {
       console.log(err);

@@ -17,7 +17,7 @@ const UserSchema = new Schema({
     type: String,
     required: [true, 'Password is required']
   },
-  confirmationCode: { 
+  confirmationCode: {
     type: String,
     unique: true
   },
@@ -25,7 +25,11 @@ const UserSchema = new Schema({
     type: String,
     enum:["Pending Confirmation", "Active"],
     default: "Pending Confirmation"
-  }
+  },
+  recipes: [{
+    type: Schema.Types.ObjectId,
+    ref: 'Recipe'
+  }]
 }, {
   timestamps: {
     createdAt: 'created_at',
