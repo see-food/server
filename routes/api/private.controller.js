@@ -7,6 +7,7 @@ const Recipe = require('../../models/recipe.model')
 
 //Extract user photos
 router.get('/pics', (req, res, next) => {
+  if (!req.user) res.status(403).json({message: 'User is not logged in'})
   Photo.find({'user': req.user._id})
   .then(photos => {
     if (!photos) res.status(404).json({message: 'User has no photos yet'})
@@ -19,6 +20,7 @@ router.get('/pics', (req, res, next) => {
 
 //List user faved recipes
 router.get('/recipes', (req, res, next) => {
+  if (!req.user) res.status(403).json({message: 'User is not logged in'})
   User.findById(req.user._id)
   .then(user => {
     if (!user) res.status(403).json({ message: 'User does not exist'})
