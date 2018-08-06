@@ -4,6 +4,7 @@ const router   = express.Router();
 const User     = require('../../models/user.model');
 const bcrypt   = require('bcrypt');
 const sendEmail = require('../../mailing/send');
+const authUtils = require('../../utils/authentication.utils')
 
 
 router.post("/login", (req, res, next) => {
@@ -24,24 +25,30 @@ router.post("/login", (req, res, next) => {
 });
 
 router.post("/signup", (req, res, next) => {
-  console.log(req.body)
   const { username, email, password } = req.body;
 
   if (!username || !password || !email) {
-    return res
-      .status(400)
-      .json({ message: "Please provide all fields" });
-    ;
+    return res.status(400).json({ message: "Please provide all fields" })
+  }
+
+  if (username.length < 4) {
+    return res.status(400).json({ message: 'Username should be at least 4 characters long' })
+  }
+
+  if (!authUtils.validateEmail(email)) {
+    return res.status(400).json({ message: 'Email not valid' })
+  }
+
+  if (password.length < 4) {
+    return res.status(400).json({ message: 'Password should be at least 4 characters long' })
   }
 
   User.findOne({ username }, "username", (err, user) => {
     if (user !== null) {
-      return res
-          .status(400)
-          .json({ message: "The username already exists" });
+      return res.status(400).json({ message: "The username already exists" })
     }
 
-    const salt     = bcrypt.genSaltSync(10);
+    const salt = bcrypt.genSaltSync(10);
     const hashPass = bcrypt.hashSync(password, salt);
     const hashConfirmation = bcrypt.hashSync(username, salt)
     const newUser = User({
@@ -51,24 +58,16 @@ router.post("/signup", (req, res, next) => {
       confirmationCode: hashConfirmation
     });
 
-    newUser.save((err) => {
+    newUser.save((err, user) => {
       if (err) {
-        res.status(400).json({ message: "Something went wrong" });
+        res.status(400).json({ message: "Something went wrong", error: err });
       } else {
-        // req.login(newUser, function(err) {
-        //   if (err) {
-        //     return res.status(500).json({
-        //       message: 'something went wrong'
-        //     });
-        //   }
+        var buffer = new Buffer(newUser.confirmationCode);
+        var encoded = buffer.toString('base64');
 
-          var buffer = new Buffer(newUser.confirmationCode);
-          var encoded = buffer.toString('base64');
+        sendEmail(newUser.username, newUser.email, encoded)
 
-
-          sendEmail(newUser.username, newUser.email, encoded)
-          return res.status(200).json(req.user);
-        // })
+        res.status(200).json(user)
       }
     });
   });
