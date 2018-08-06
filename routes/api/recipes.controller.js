@@ -2,20 +2,33 @@ const express = require('express');
 const router = express.Router();
 const Recipe = require('../../models/recipe.model');
 const User = require('../../models/user.model');
-
-//Get recipes by cuisine type
-//Get recipes by ingredient
-//Get recipe by category
+const recipes = require('../../utils/recipes.utils')
 
 //Post new recipe if doesn't exists in the db
 router.post('/', (req, res, next) => {
   let { name, time, servings, calories, instructions, images, ingredients } = req.body
 
-  Recipe.findOne({name}, "name", (err, recipe) => {
+  const newRecipe = new Recipe({
+    name,
+    time,
+    servings,
+    calories,
+    instructions,
+    images,
+    ingredients
+  })
+
+
+  // let cososas = recipes.saveRecipe(newRecipe)
+  //
+  // return res.status(200).json(cososas)
+
+
+
+  Recipe.findOne({name}, (err, recipe) => {
+    //Recipe already exists
     if (recipe !== null) {
-      return res
-          .status(202)
-          .json({ message: "The recipe already exists" });
+      return res.status(202).json(recipe);
     }
 
     const newRecipe = new Recipe({
@@ -29,8 +42,8 @@ router.post('/', (req, res, next) => {
     });
 
     newRecipe.save((err) => {
-      if (err)              { return res.status(500).json(err); }
-      if (newRecipe.errors) { return res.status(400).json(newRecipe); }
+      if (err) return res.status(500).json(err)
+      if (newRecipe.errors) return res.status(400).json(newRecipe)
 
       return res.status(200).json(newRecipe);
     });
