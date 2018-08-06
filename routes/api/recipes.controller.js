@@ -87,6 +87,7 @@ router.get('/fav/:id', (req, res, next) => {
   .catch(err => res.status(500).json(err))
 })
 
+
 //Get recipe by ID
 router.get('/:id', (req, res, next) => {
   Recipe.findById(req.params.id).then((recipe) => {
