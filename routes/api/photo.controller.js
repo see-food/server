@@ -59,7 +59,7 @@ router.post('/', uploadCloud.single('file'), (req, res, next) => {
 
           //Inmediatelly send 200 after uploading photo
           res.status(200).json({
-            message: 'Photo uploaded correctly',
+            message: 'Photo uploaded correctly, searching recipes in the background',
             photo
           })
         })
@@ -72,6 +72,21 @@ router.post('/', uploadCloud.single('file'), (req, res, next) => {
       console.log(err);
       return res.status(500).json(err)
     })
+})
+
+//Extract user photos
+router.get('/', (req, res, next) => {
+  Photo.find({'user': req.user._id})
+  .then(photos => {
+    if (!photos) res.status(404).json({message: 'User has no photos yet'})
+
+    res.status(200).json(photos)
+  })
+})
+
+//Extract photo info
+router.get('/:id', (req, res, next) => {
+  //There showld be a call to user recipes!!!!
 })
 
 module.exports = router;
