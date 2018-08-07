@@ -88,6 +88,18 @@ router.get('/fav/:id', (req, res, next) => {
 })
 
 
+// router.get('/isfav/:id', (req, res, next) => {
+//   User.findById(req.user._id, 'recipes')
+//   .then(user => {
+//     if (user.recipes.filter(e => e == req.params.id).length > 0) {
+//       res.status(200).json({message: 'true'})
+//     } else {
+//       res.status(200).json({message: 'false'})
+//     }
+//   })
+// })
+
+
 //Get recipe by ID
 router.get('/:id', (req, res, next) => {
   Recipe.findById(req.params.id).then((recipe) => {
