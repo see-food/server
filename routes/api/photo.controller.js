@@ -76,21 +76,21 @@ router.post('/', uploadCloud.single('file'), (req, res, next) => {
 
 //Extract photo info
 router.get('/:id', (req, res, next) => {
-  if (!req.user) res.status(403).json({message: 'User is not logged in'})
+  if (!req.user) return res.status(403).json({message: 'User is not logged in'})
   //There showld be a call to user recipes!!!!
   Photo.findById(req.params.id).populate('recipes')
   .then(photo => {
     //If photo does not exist -> 404
-    if (!photo) res.status(404).json({message: 'Photo not found'})
+    if (!photo) return res.status(404).json({message: 'Photo not found'})
     //If logged user is not the propietary of the photo -> 403, else -> photo
     if (req.user._id.equals(photo.user)) {
-      res.status(200).json(photo)
+      return res.status(200).json(photo)
     } else {
-      res.status(403).json({message: 'The photo does not belong to the user'})
+      return res.status(403).json({message: 'The photo does not belong to the user'})
     }
   })
   .catch(err => {
-    res.status(500).json(err)
+    return res.status(500).json(err)
   })
 })
 
