@@ -20,19 +20,19 @@ router.get('/pics', (req, res, next) => {
 
 //List user faved recipes
 router.get('/recipes', (req, res, next) => {
-  if (!req.user) res.status(403).json({message: 'User is not logged in'})
+  if (!req.user) return res.status(403).json({message: 'User is not logged in'})
   User.findById(req.user._id)
   .then(user => {
-    if (!user) res.status(403).json({ message: 'User does not exist'})
+    if (!user) return res.status(403).json({ message: 'User does not exist'})
 
     let query = {_id: []}
     user.recipes.forEach(e => query._id.push(e))
-    console.log(query)
     //Search
     Recipe.find(query)
     .then(recipes => {
-      if (!recipes) res.status(404).json({ message: 'User does not have starred recipes yet'})
-      res.status(200).json(recipes)
+      console.log(recipes)
+      if (!recipes) return res.status(404).json({ message: 'User does not have starred recipes yet'})
+      return res.status(200).json(recipes)
     })
   })
   .catch(err => {
