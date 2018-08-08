@@ -92,9 +92,9 @@ router.get('/isfav/:id', (req, res, next) => {
   User.findById(req.user._id, 'recipes')
   .then(user => {
     if (user.recipes.filter(e => e == req.params.id).length > 0) {
-      res.status(200).json({message: 'true'})
+      res.status(200).json({message: 'yep'})
     } else {
-      res.status(200).json({message: 'false'})
+      res.status(200).json({message: 'nope'})
     }
   })
 })
