@@ -74,6 +74,28 @@ router.post('/', uploadCloud.single('file'), (req, res, next) => {
     })
 })
 
+
+router.get('/delete/:id', (req, res, next) => {
+  if (!req.user) return res.status(403).json({message: 'User is not logged in'})
+
+  Photo.findById(req.params.id)
+  .then(photo => {
+    //If photo does not exist -> 404
+    if (!photo) return res.status(404).json({message: 'Photo not found'})
+    //If logged user is not the propietary of the photo -> 403, else -> delete photo
+    if (req.user._id.equals(photo.user)) {
+      Photo.findByIdAndRemove(req.params.id).then(() => {
+        return res.status(200).json({message: 'The photo have been deleted'})
+      })
+    } else {
+      return res.status(403).json({message: 'The photo does not belong to the user'})
+    }
+  })
+  .catch(err => {
+    return res.status(500).json(err)
+  })
+})
+
 //Extract photo info
 router.get('/:id', (req, res, next) => {
   if (!req.user) return res.status(403).json({message: 'User is not logged in'})

@@ -71,7 +71,6 @@ router.get('/fav/:id', (req, res, next) => {
         filteredRecipes = recipes.filter(e => {
           return e != req.params.id
         })
-        console.log(filteredRecipes)
       } else {
         recipes.push(req.params.id)
         filteredRecipes = recipes
