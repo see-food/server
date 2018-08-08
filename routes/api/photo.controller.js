@@ -35,7 +35,7 @@ router.post('/', uploadCloud.single('file'), (req, res, next) => {
           //Make search term joinign clarifai info
           const searchTerm = photoUtils.extractTerms(photo).join(',')
 
-          if (!searchTerm) res.status(404).json({
+          if (!searchTerm) return res.status(404).json({
             message: 'No items found on this photo'
           })
 
@@ -58,14 +58,14 @@ router.post('/', uploadCloud.single('file'), (req, res, next) => {
           .catch( err => console.log(err) )
 
           //Inmediatelly send 200 after uploading photo
-          res.status(200).json({
+          return res.status(200).json({
             message: 'Photo uploaded correctly, searching recipes in the background',
             photo
           })
         })
         .catch(err => {
           console.log(err)
-          res.status(500).json(err)
+          return res.status(500).json(err)
         })
     })
     .catch(err => {
