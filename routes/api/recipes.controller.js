@@ -69,7 +69,7 @@ router.get('/fav/:id', (req, res, next) => {
       //If recipe already exists in user recipes array, delete it, otherwise, include it
       if (recipes.some(e => e.equals(req.params.id))) {
         filteredRecipes = recipes.filter(e => {
-          e != req.params.id
+          return e != req.params.id
         })
       } else {
         recipes.push(req.params.id)
@@ -80,7 +80,7 @@ router.get('/fav/:id', (req, res, next) => {
 
       User.findByIdAndUpdate(req.user._id, update, {new: true})
       .then(user => {
-        res.status(200).json({message: `Recipe ${req.params.id} toggled from user ${req.user._id}`})
+        return res.status(200).json({message: `Recipe ${req.params.id} toggled from user ${req.user._id}`})
       })
     })
   })
@@ -92,9 +92,9 @@ router.get('/isfav/:id', (req, res, next) => {
   User.findById(req.user._id, 'recipes')
   .then(user => {
     if (user.recipes.filter(e => e == req.params.id).length > 0) {
-      res.status(200).json({message: 'true'})
+      return res.status(200).json({message: 'yep'})
     } else {
-      res.status(200).json({message: 'false'})
+      return res.status(200).json({message: 'nope'})
     }
   })
 })

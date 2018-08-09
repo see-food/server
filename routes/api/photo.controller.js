@@ -16,7 +16,7 @@ router.post('/', uploadCloud.single('file'), (req, res, next) => {
 
   clarifaiApp.models.predict(Clarifai.FOOD_MODEL, req.file.url)
     .then(concepts => {
-      console.log(concepts.outputs[0].data);
+      console.log(concepts.outputs[0].data.concepts)
       const filteredConcepts = concepts.outputs[0].data.concepts.filter(el => el.value >= 0.98)
       filteredConcepts.map(el => {
         delete el.id
@@ -29,14 +29,14 @@ router.post('/', uploadCloud.single('file'), (req, res, next) => {
         user: req.user._id,
         clarifaiInfo: filteredConcepts
       });
-      console.log(newPhoto);
       newPhoto.save()
         .then(photo => {
           //Make search term joinign clarifai info
           const searchTerm = photoUtils.extractTerms(photo).join(',')
 
-          if (!searchTerm) return res.status(404).json({
-            message: 'No items found on this photo'
+          if (!searchTerm) return res.status(200).json({
+            message: 'No items found on this photo',
+            photo
           })
 
           const url = `${process.env.ALLRECIPES_ENDPOINT}${searchTerm}`
@@ -72,6 +72,28 @@ router.post('/', uploadCloud.single('file'), (req, res, next) => {
       console.log(err);
       return res.status(500).json(err)
     })
+})
+
+
+router.get('/delete/:id', (req, res, next) => {
+  if (!req.user) return res.status(403).json({message: 'User is not logged in'})
+
+  Photo.findById(req.params.id)
+  .then(photo => {
+    //If photo does not exist -> 404
+    if (!photo) return res.status(404).json({message: 'Photo not found'})
+    //If logged user is not the propietary of the photo -> 403, else -> delete photo
+    if (req.user._id.equals(photo.user)) {
+      Photo.findByIdAndRemove(req.params.id).then(() => {
+        return res.status(200).json({message: 'The photo have been deleted'})
+      })
+    } else {
+      return res.status(403).json({message: 'The photo does not belong to the user'})
+    }
+  })
+  .catch(err => {
+    return res.status(500).json(err)
+  })
 })
 
 //Extract photo info

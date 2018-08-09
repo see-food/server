@@ -65,7 +65,7 @@ router.post("/signup", (req, res, next) => {
         var buffer = new Buffer(newUser.confirmationCode);
         var encoded = buffer.toString('base64');
 
-        sendEmail(newUser.username, newUser.email, encoded)
+        sendEmail(newUser.username, newUser.email, process.env.CONFIRM_URL, encoded)
 
         res.status(200).json(user)
       }
