@@ -16,6 +16,7 @@ router.post('/', uploadCloud.single('file'), (req, res, next) => {
 
   clarifaiApp.models.predict(Clarifai.FOOD_MODEL, req.file.url)
     .then(concepts => {
+      console.log(concepts.outputs[0].data.concepts)
       const filteredConcepts = concepts.outputs[0].data.concepts.filter(el => el.value >= 0.98)
       filteredConcepts.map(el => {
         delete el.id
@@ -33,7 +34,7 @@ router.post('/', uploadCloud.single('file'), (req, res, next) => {
           //Make search term joinign clarifai info
           const searchTerm = photoUtils.extractTerms(photo).join(',')
 
-          if (!searchTerm) return res.status(204).json({
+          if (!searchTerm) return res.status(200).json({
             message: 'No items found on this photo',
             photo
           })
